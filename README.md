@@ -1,3 +1,7 @@
+## Name: Odubiyi Ifeoluwa Antonia
+
+## Email: odubiyiifeolu@gmail.com
+
 # Task Management API- https://documenter.getpostman.com/view/24419976/2sA3kXEgDy
 
 ## Project Overview
@@ -81,8 +85,8 @@ The `TaskRepositoryInterface` ensures that the repository implementation adheres
 
 ```bash
 # Clone the Repository
-git clone https://github.com/yourusername/task-management-api.git
-cd task-management-api
+git clone https://github.com/T0niadev/Task-Management.git
+cd Task-Management
 
 # Install Dependencies
 composer install
