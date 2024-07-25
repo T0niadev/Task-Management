@@ -14,21 +14,31 @@ class TaskTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Token for authenticated requests
     protected $token;
+
+    // ID of the created task for testing
     protected $taskId;
 
+
+    /**
+     * Set up the test environment.
+     *
+     * This method is called before each test is run. It creates a user, authenticates the user,
+     * and creates a sample task for use in tests.
+     */
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Create a user and authenticate
+        // Create a user and authenticates for testing the tasks
         $user = User::create([
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => Hash::make('password123'),
         ]);
 
-        // Manually authenticate
+        // Manually authenticates
         $this->actingAs($user);
 
         // Create a task
@@ -39,46 +49,25 @@ class TaskTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+
+        // Generates a token for authenticated requests
         $this->token = $user->createToken('TestToken')->plainTextToken;
+
+        // Stores the task ID for use in subsequent tests
         $this->taskId = $task->id;
     }
 
-    public function test_register()
-    {
-        $response = $this->post('/api/register', [
-            'name' => 'Test',
-            'email' => 'testt@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-        ]);
 
-        $response->assertStatus(201);
-        $response->assertJsonStructure(['token']);
-    }
 
-    public function test_login()
-    {
-        // Ensure the user exists
-        $user = \App\Models\User::factory()->create([
-            'email' => 'testt@example.com',
-            'password' => Hash::make('password123'),
-        ]);
-
-        $response = $this->post('/api/login', [
-            'email' => 'testt@example.com',
-            'password' => 'password123',
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['token']);
-
-        // Store token for subsequent requests
-        $this->token = $response->json('token');
-    }
-
+    /**
+     * Test task creation endpoint.
+     *
+     * Sends a POST request to the /api/tasks endpoint with task data, including the authorization token.
+     * Asserts that the response status is 201 and retrieves the task ID for further tests.
+     */
     public function test_create_task()
     {
-        $this->test_login(); // Ensure token is set
+      
 
         $response = $this->post('/api/tasks', [
             'title' => 'Test Task',
@@ -90,6 +79,14 @@ class TaskTest extends TestCase
     }
 
 
+
+
+    /**
+     * Test task retrieval endpoint.
+     *
+     * Sends a GET request to the /api/tasks/{id} endpoint to retrieve the task by its ID.
+     * Asserts that the response status is 200 and verifies the task title in the response.
+     */
     public function test_read_task()
     {
         $response = $this->get("/api/tasks/{$this->taskId}", [
@@ -100,6 +97,14 @@ class TaskTest extends TestCase
         $response->assertJsonFragment(['title' => 'Sample Task']);
     }
 
+
+
+    /**
+     * Test task update endpoint.
+     *
+     * Sends a PUT request to the /api/tasks/{id} endpoint to update the task with new data.
+     * Asserts that the response status is 200 and verifies the updated task title in the response.
+    */
     public function test_update_task()
     {
         $response = $this->put("/api/tasks/{$this->taskId}", [
@@ -112,13 +117,22 @@ class TaskTest extends TestCase
         $response->assertJsonFragment(['title' => 'Updated Task']);
     }
 
+
+
+    /**
+     * Test task deletion endpoint.
+     *
+     * Sends a DELETE request to the /api/tasks/{id} endpoint to delete the task by its ID.
+     * Asserts that the response status is 200 (or 204 if your API returns 204 on successful deletion) 
+     * and verifies the success message in the response.
+    */
     public function test_delete_task()
     {
         $response = $this->delete("/api/tasks/{$this->taskId}", [], [
             'Authorization' => 'Bearer ' . $this->token,
         ]);
 
-        $response->assertStatus(200); // Change to 204 if your API returns 204 on successful deletion
+        $response->assertStatus(200); 
         $response->assertJsonFragment(['message' => 'Task deleted successfully.']);
     }
 

@@ -20,8 +20,9 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    
     /**
-     * Register the exception handling callbacks for the application.
+     * This registers the exception handling callbacks for the application.
      */
     public function register(): void
     {
@@ -30,18 +31,32 @@ class Handler extends ExceptionHandler
         });
     }
 
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * This method handles the rendering of exceptions and can customize the response
+     * based on the type of exception. Specifically, it handles MethodNotAllowedHttpException
+     * to provide a specific JSON response or a view for non-API requests.
+     *
+    */
     public function render($request, Throwable $exception)
     {
-        // Handle MethodNotAllowedHttpException
+        // This handles MethodNotAllowedHttpException
         if ($exception instanceof MethodNotAllowedHttpException) {
             if ($request->expectsJson()) {
+
+
+                // This displays HTTP status code for Method Not Allowed
                 return response()->json([
                     'error' => 'Method Not Allowed',
                     'message' => 'The method is not allowed for the requested route.'
-                ], 405); // HTTP status code for Method Not Allowed
+                ], 405);
             }
 
-            return response()->view('errors.405', [], 405); // for non-API requests
+
+            // This is for non-API requests
+            return response()->view('errors.405', [], 405);
         }
 
         return parent::render($request, $exception);

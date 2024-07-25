@@ -12,6 +12,10 @@ class RedirectIfAuthenticated
 {
     /**
      * Handle an incoming request.
+     * This middleware checks if the user is authenticated with any of the specified guards.
+     * If the user is authenticated, they are allowed to access other routes.
+     * Otherwise, the request is passed further down the middleware stack.
+     *
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -27,5 +31,5 @@ class RedirectIfAuthenticated
 
         return $next($request);
     }
-    
+
 }
